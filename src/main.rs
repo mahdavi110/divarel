@@ -4,13 +4,16 @@ use std::time::Duration;
 use tokio_postgres::{Client, Error as PgError, NoTls};
 use url::Url;
 
+//its a comment
+
+
 fn create_divar_url(
     lon1: f64,
     lat1: f64,
-    lon2: f64,
+     lon2: f64,
     lat2: f64,
     category: &str,
-    price: i64,
+    price: i64 ,
     recent_ads: Option<&str>,
 ) -> String {
     let mut url = Url::parse("https://api.divar.ir/v8/map-discovery/bbox/posts/count?").unwrap();
