@@ -20,7 +20,15 @@
                 }
             },
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "RUST_LOG": "debug",
+                "PGHOST": "pgdk",
+                "PGPORT": "5432",
+                "PGUSER": "dev",
+                "PGPASSWORD": "vatanampareyetanameyiran",
+                "PGDATABASE": "appdb"
+            }
         },
         {
             "type": "lldb",
@@ -39,7 +47,15 @@
                 }
             },
             "args": [],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "RUST_LOG": "debug",
+                "PGHOST": "pgdk",
+                "PGPORT": "5432",
+                "PGUSER": "dev",
+                "PGPASSWORD": "vatanampareyetanameyiran",
+                "PGDATABASE": "appdb"
+            }
         }
     ]
 }

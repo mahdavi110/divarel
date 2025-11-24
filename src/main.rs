@@ -1,5 +1,6 @@
 use reqwest;
 use serde_json::Value;
+use std::env;
 use std::time::Duration;
 use tokio_postgres::{Client, Error as PgError, NoTls};
 use url::Url;
@@ -113,11 +114,20 @@ async fn fetch_and_insert_data(
 //     Ok(())
 // }
 
+fn build_conn_str() -> String {
+    let host = env::var("PGHOST").unwrap_or_else(|_| "pgdk".to_string());
+    let user = env::var("PGUSER").unwrap_or_else(|_| "dev".to_string());
+    let password =
+        env::var("PGPASSWORD").unwrap_or_else(|_| "vatanampareyetanameyiran".to_string());
+    let db = env::var("PGDATABASE").unwrap_or_else(|_| "appdb".to_string());
+    format!("host={} user={} password={} dbname={}", host, user, password, db)
+}
+
 async fn insert_dollar () -> Result<(), Box<dyn std::error::Error>> {
-        let conn_str = "host=localhost user=postgres password=eepa dbname=bourse";
+        let conn_str = build_conn_str();
 
     // Create async connection
-    let (client, connection) = tokio_postgres::connect(conn_str, NoTls).await?;
+    let (client, connection) = tokio_postgres::connect(&conn_str, NoTls).await?;
 
     // The connection object performs the actual communication with the database,
     // so spawn it off to run on its own
@@ -160,10 +170,11 @@ async fn insert_dollar () -> Result<(), Box<dyn std::error::Error>> {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let conn_str = "host=localhost user=postgres password=eepa dbname=bourse";
+    let conn_str = build_conn_str();
+    let constr = String::from(&conn_str) ; 
 
     // Create async connection
-    let (client, connection) = tokio_postgres::connect(conn_str, NoTls).await?;
+    let (client, connection) = tokio_postgres::connect(&conn_str, NoTls).await?;
 
     // The connection object performs the actual communication with the database,
     // so spawn it off to run on its own
