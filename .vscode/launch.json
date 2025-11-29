@@ -27,7 +27,7 @@
                 "PGPORT": "5432",
                 "PGUSER": "dev",
                 "PGPASSWORD": "vatanampareyetanameyiran",
-                "PGDATABASE": "appdb"
+                "PGDATABASE": "bourse"
             }
         },
         {
@@ -54,7 +54,7 @@
                 "PGPORT": "5432",
                 "PGUSER": "dev",
                 "PGPASSWORD": "vatanampareyetanameyiran",
-                "PGDATABASE": "appdb"
+                "PGDATABASE": "bourse"
             }
         }
     ]
