@@ -119,7 +119,7 @@ fn build_conn_str() -> String {
     let user = env::var("PGUSER").unwrap_or_else(|_| "dev".to_string());
     let password =
         env::var("PGPASSWORD").unwrap_or_else(|_| "vatanampareyetanameyiran".to_string());
-    let db = env::var("PGDATABASE").unwrap_or_else(|_| "appdb".to_string());
+    let db = env::var("PGDATABASE").unwrap_or_else(|_| "bourse".to_string());
     format!("host={} user={} password={} dbname={}", host, user, password, db)
 }
 
@@ -171,7 +171,6 @@ async fn insert_dollar () -> Result<(), Box<dyn std::error::Error>> {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let conn_str = build_conn_str();
-    let constr = String::from(&conn_str) ; 
 
     // Create async connection
     let (client, connection) = tokio_postgres::connect(&conn_str, NoTls).await?;
