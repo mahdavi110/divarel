@@ -7,14 +7,13 @@ use url::Url;
 
 //its a comment
 
-
 fn create_divar_url(
     lon1: f64,
     lat1: f64,
-     lon2: f64,
+    lon2: f64,
     lat2: f64,
     category: &str,
-    price: i64 ,
+    price: i64,
     recent_ads: Option<&str>,
 ) -> String {
     let mut url = Url::parse("https://api.divar.ir/v8/map-discovery/bbox/posts/count?").unwrap();
@@ -65,7 +64,7 @@ async fn create_tables(client: &Client) -> Result<(), PgError> {
     Ok(())
 }
 
-async fn fetch_and_insert_data(
+async fn _fetch_and_insert_data(
     client: &Client,
     url: String,
     lon1: f64,
@@ -120,11 +119,14 @@ fn build_conn_str() -> String {
     let password =
         env::var("PGPASSWORD").unwrap_or_else(|_| "vatanampareyetanameyiran".to_string());
     let db = env::var("PGDATABASE").unwrap_or_else(|_| "bourse".to_string());
-    format!("host={} user={} password={} dbname={}", host, user, password, db)
+    format!(
+        "host={} user={} password={} dbname={}",
+        host, user, password, db
+    )
 }
 
-async fn insert_dollar () -> Result<(), Box<dyn std::error::Error>> {
-        let conn_str = build_conn_str();
+async fn insert_dollar() -> Result<(), Box<dyn std::error::Error>> {
+    let conn_str = build_conn_str();
 
     // Create async connection
     let (client, connection) = tokio_postgres::connect(&conn_str, NoTls).await?;
@@ -138,22 +140,30 @@ async fn insert_dollar () -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let http_client = reqwest::Client::builder()
-    .timeout(Duration::from_secs(10))
-    .build()?;
+        .timeout(Duration::from_secs(10))
+        .build()?;
 
-    
     let response = http_client.get("https://api.tgju.org/v1/market/indicator/summary-table-data/price_dollar_rl?lang=fa&order_dir=asc&start=0&length=600000&from=&to=&convert_to_ad=1").send().await?;
     let parsed_json: Value = response.json().await?;
 
     let mut insert_query = String::from("INSERT INTO dollar (date, dollar_price) VALUES ");
     let mut values: Vec<String> = Vec::new();
 
-    
     if let Some(records) = parsed_json["data"].as_array() {
         for record in records {
-            let date = record[6].as_str().ok_or("Missing or invalid date")?.replace("/", "").parse::<i64>().map_err(|_| "Failed to parse date")?;
+            let date = record[6]
+                .as_str()
+                .ok_or("Missing or invalid date")?
+                .replace("/", "")
+                .parse::<i64>()
+                .map_err(|_| "Failed to parse date")?;
 
-            let dollar_price = record[3].as_str().ok_or("Missing or invalid dollar_price")?.replace(",", "").parse::<i64>().map_err(|_| "Failed to parse dollar price")?;
+            let dollar_price = record[3]
+                .as_str()
+                .ok_or("Missing or invalid dollar_price")?
+                .replace(",", "")
+                .parse::<i64>()
+                .map_err(|_| "Failed to parse dollar price")?;
 
             // Format each value into a SQL-friendly format
             let value_str = format!("({}, {})", date, dollar_price);
@@ -163,8 +173,8 @@ async fn insert_dollar () -> Result<(), Box<dyn std::error::Error>> {
 
     insert_query.push_str(&values.join(", "));
     insert_query.push_str(" ON CONFLICT (date) DO NOTHING;");
-    client.execute(&insert_query,&[]).await?;
-    
+    client.execute(&insert_query, &[]).await?;
+
     Ok(())
 }
 
@@ -208,60 +218,59 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         for category in &categories {
             for price in &prices {
                 for recent_ads in &recent_ads_options {
-                    let url =
+                    let _url =
                         create_divar_url(lon1, lat1, lon2, lat2, category, *price, *recent_ads);
 
-                    if let Err(e) = fetch_and_insert_data(
-                        &client,
-                        url.clone(),
-                        lon1,
-                        lat1,
-                        lon2,
-                        lat2,
-                        category,
-                        *price,
-                        *recent_ads,
-                    )
-                    .await
-                    {
-                        eprintln!("Error processing URL {}: {}", url, e);
-                    }
+                    // do not delete following comments.
+                    // if let Err(e) = fetch_and_insert_data(
+                    //     &client,
+                    //     url.clone(),
+                    //     lon1,
+                    //     lat1,
+                    //     lon2,
+                    //     lat2,
+                    //     category,
+                    //     *price,
+                    //     *recent_ads,
+                    // )
+                    // .await
+                    // {
+                    //     eprintln!("Error processing URL {}: {}", url, e);
+                    // }
                 }
             }
         }
     }
 
-    client
-        .execute("DROP MATERIALIZED VIEW IF EXISTS mv_divar_apartment;", &[])
-        .await?;
-    client
-        .execute("DROP MATERIALIZED VIEW IF EXISTS mv_divar_plotold;", &[])
-        .await?;
-    client
-        .execute(
-            "CREATE MATERIALIZED VIEW IF NOT EXISTS mv_divar_apartment AS
-                select date,sum(count) from divar_data where 
-                    price = 8000000000 and recent_ads = '7d'  and category = 'apartment-sell' 
-                    group by date 
-                    order by date ; ",
-            &[],
-        )
-        .await?;
+    // do not delete following comments.
+    // client
+    //     .execute("DROP MATERIALIZED VIEW IF EXISTS mv_divar_apartment;", &[])
+    //     .await?;
+    // client
+    //     .execute("DROP MATERIALIZED VIEW IF EXISTS mv_divar_plotold;", &[])
+    //     .await?;
+    // client
+    //     .execute(
+    //         "CREATE MATERIALIZED VIEW IF NOT EXISTS mv_divar_apartment AS
+    //             select date,sum(count) from divar_data where
+    //                 price = 8000000000 and recent_ads = '7d'  and category = 'apartment-sell'
+    //                 group by date
+    //                 order by date ; ",
+    //         &[],
+    //     )
+    //     .await?;
+    // client
+    //     .execute(
+    //         "CREATE MATERIALIZED VIEW IF NOT EXISTS mv_divar_plotold AS
+    //             select date,sum(count) from divar_data where
+    //                 price = 8000000000 and recent_ads = '7d'  and category = 'plot-old'
+    //                 group by date
+    //                 order by date ; ",
+    //         &[],
+    //     )
+    //     .await?;
 
-    client
-        .execute(
-            "CREATE MATERIALIZED VIEW IF NOT EXISTS mv_divar_plotold AS
-                select date,sum(count) from divar_data where 
-                    price = 8000000000 and recent_ads = '7d'  and category = 'plot-old' 
-                    group by date 
-                    order by date ; ",
-            &[],
-        )
-        .await?;
-
-    insert_dollar().await? ; 
+    insert_dollar().await?;
 
     Ok(())
-
-    
 }
