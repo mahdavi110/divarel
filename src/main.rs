@@ -270,7 +270,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     )
     //     .await?;
 
-    insert_dollar().await?;
-
+    for attempt in 1..=5 {
+        print!("Attempt {attempt} to insert dollar price");
+        if insert_dollar().await.is_ok() {
+            println!(" succeeded");
+            break;
+        }
+        println!(" failed");
+        tokio::time::sleep(tokio::time::Duration::from_secs(5)).await;
+    }
     Ok(())
 }
